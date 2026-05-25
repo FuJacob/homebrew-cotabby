@@ -1,0 +1,62 @@
+# Auto-update the cask formula when a new release is published.
+#
+# Triggered by a repository_dispatch event from the main tabby repo's
+# release workflow. The client_payload must include:
+#   version  - the release version without the leading "v" (e.g. "0.0.7-beta")
+#   sha256   - SHA-256 hash of the release DMG
+
+name: Update Cask
+
+on:
+  repository_dispatch:
+    types: [update-cask]
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    name: Bump cask version
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update cask formula
+        env:
+          VERSION: ${{ github.event.client_payload.version }}
+          SHA256: ${{ github.event.client_payload.sha256 }}
+        run: |
+          set -euo pipefail
+
+          cask_file="Casks/cotabby.rb"
+
+          if [[ -z "${VERSION}" || -z "${SHA256}" ]]; then
+            echo "Missing version or sha256 in client_payload." >&2
+            exit 1
+          fi
+
+          sed -i "s/version \".*\"/version \"${VERSION}\"/" "${cask_file}"
+          sed -i "s/sha256 \".*\"/sha256 \"${SHA256}\"/" "${cask_file}"
+
+          echo "Updated ${cask_file} to version ${VERSION} (sha256: ${SHA256})"
+          cat "${cask_file}"
+
+      - name: Commit and push
+        env:
+          VERSION: ${{ github.event.client_payload.version }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add Casks/cotabby.rb
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Update cotabby to ${VERSION}"
+          git push
