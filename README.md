@@ -1,6 +1,6 @@
 # homebrew-cotabby
 
-Homebrew tap for [Cotabby](https://github.com/FuJacob/tabby) — on-device inline autocomplete for macOS.
+Homebrew tap for [Cotabby](https://github.com/fujacob/tabby) — on-device inline autocomplete for macOS.
 
 ## Install
 
