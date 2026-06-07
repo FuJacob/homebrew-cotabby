@@ -1,6 +1,6 @@
 cask "cotabby" do
-  version "0.5.1-beta"
-  sha256 "1ddc9cc3a554fc7d6faa1027b38d9c6500ec4695bf4f5a1ecb0507670295bf7a"
+  version "0.5.2-beta"
+  sha256 "f918fb3bb708fca380887e5536d87652e8a8dedbcc2f883873c78fd6fc8df524"
 
   url "https://github.com/FuJacob/cotabby/releases/download/v#{version}/Cotabby.dmg"
   name "Cotabby"
